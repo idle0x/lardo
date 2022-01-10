@@ -2,62 +2,57 @@ FROM alpine
 
 WORKDIR /var/www
 
+# Set config for xdebug
 ENV XDEBUG_MODE=off
 ENV XDEBUG_CONFIG=host.docker.internal
 
-RUN apk --update add \
+# Install php and supervisor
+RUN apk --no-cache add \
     php8 \
-    php8-bcmath \
-    php8-dom \
-    php8-ctype \
-    php8-curl \
-    php8-fileinfo \
+    php8-common \
     php8-fpm \
-    php8-gd \
-    php8-iconv \
-    php8-intl \
-    php8-json \
-    php8-mbstring \
-    php8-pecl-mcrypt \
-    php8-mysqlnd \
-    php8-opcache \
-    php8-openssl \
-    php8-pcntl \
     php8-pdo \
-    php8-pdo_pgsql \
-    php8-pdo_mysql \
-    php8-phar \
-    php8-redis \
-    php8-posix \
-    php8-simplexml \
-    php8-session \
-    php8-soap \
-    php8-sockets \
-    php8-tokenizer \
-    php8-xml \
-    php8-xmlreader \
-    php8-pecl-xdebug \
-    php8-xmlwriter \
+    php8-opcache \
     php8-zip \
-    composer \
-    supervisor \
-    && apk add --no-cache
+    php8-phar \
+    php8-iconv \
+    php8-cli \
+    php8-curl \
+    php8-openssl \
+    php8-mbstring \
+    php8-tokenizer \
+    php8-fileinfo \
+    php8-json \
+    php8-xml \
+    php8-xmlwriter \
+    php8-simplexml \
+    php8-dom \
+    php8-pdo_mysql \
+    php8-pdo_pgsql \
+    php8-pdo_sqlite \
+    php8-tokenizer \
+    php8-pecl-redis \
+    php8-pecl-xdebug \
+    supervisor
 
+# PHP config
 COPY ./conf/php.ini /etc/php8/conf.d/50-settings.ini
 COPY ./conf/php-fpm.conf /etc/php8/php-fpm.conf
-
-COPY ./conf/supervisord.conf /etc/
-COPY ./start.sh /start.sh
-RUN chmod 755 /start.sh
-
-#make dir for log
-# RUN mkdir -p /var/log/supervisor
 #make symlink for alias php8 to php
 RUN ln -sfn /usr/bin/php8 /usr/bin/php
 
-ADD ./conf/crontab.txt /crontab.txt
+# Make rquired dirs
+RUN mkdir /var/log/php-fpm && mkdir /var/log/supervisor && mkdir /etc/supervisor.d/
+
+# Configure supervisor
+COPY ./conf/supervisor.ini /etc/supervisor.d/
+COPY ./start.sh /start.sh
+RUN chmod 755 /start.sh
+
+# Configure cron
+COPY ./conf/crontab.txt /crontab.txt
 RUN /usr/bin/crontab /crontab.txt && rm /crontab.txt
 
-EXPOSE 9000
 
-CMD ["/bin/sh", "/start.sh"]
+EXPOSE 9000
+ENTRYPOINT [ "/bin/sh", "/start.sh" ]
