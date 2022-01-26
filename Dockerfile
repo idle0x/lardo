@@ -42,7 +42,8 @@ COPY ./conf/php-fpm.conf /etc/php8/php-fpm.conf
 RUN ln -sfn /usr/bin/php8 /usr/bin/php
 
 # Make rquired dirs
-RUN mkdir /var/log/php-fpm && mkdir /var/log/supervisor && mkdir /etc/supervisor.d/
+RUN mkdir /var/log/php-fpm && mkdir /var/log/supervisor && mkdir /etc/supervisor.d/ \
+    && mkdir /var/log/xdebug
 
 # Configure supervisor
 COPY ./conf/supervisord.conf /etc/supervisor/supervisord.conf
