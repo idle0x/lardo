@@ -45,20 +45,12 @@ RUN ln -sfn /usr/bin/php8 /usr/bin/php
 RUN mkdir /var/log/php-fpm && mkdir /var/log/supervisor && mkdir /etc/supervisor.d/
 
 # Configure supervisor
-COPY ./conf/supervisor.ini /etc/supervisor.d/
-COPY ./start.sh /start.sh
-RUN chmod 755 /start.sh
-
+COPY ./conf/supervisord.conf /etc/supervisor/supervisord.conf
 
 # Configure cron
 COPY ./conf/crontab.txt /crontab.txt
 RUN /usr/bin/crontab /crontab.txt && rm /crontab.txt
 
-# Create a group and user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
 # Tell docker that all future commands should run as the appuser user
-USER appuser
-
 EXPOSE 9000
-ENTRYPOINT [ "/bin/sh", "/start.sh" ]
+ENTRYPOINT [ "/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf" ]
