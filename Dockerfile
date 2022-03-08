@@ -30,11 +30,12 @@ RUN apk --no-cache add \
     php8-pdo_mysql \
     php8-pdo_pgsql \
     php8-pdo_sqlite \
-    # Need for horizon
-    php8-pcntl\
     php8-tokenizer \
     php8-pecl-redis \
     php8-pecl-xdebug \
+    # Need for horizon
+    php8-pcntl\
+    php8-posix \
     supervisor
 
 # PHP config
