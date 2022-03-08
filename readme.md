@@ -10,7 +10,15 @@ services:
   php:
   image: idleo/lardo:latest
   volumes:
-    - .:/var/www  
+    - .:/var/www
+    # Option: may change default config
+    # For example supervisor
+    - '${PWD}/docker/php/:/etc/supervisor.d/'
   networks:
     - <you-network>
 ``` 
+
+Build
+```sh
+docker build .
+```

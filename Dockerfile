@@ -30,6 +30,8 @@ RUN apk --no-cache add \
     php8-pdo_mysql \
     php8-pdo_pgsql \
     php8-pdo_sqlite \
+    # Need for horizon
+    php8-pcntl\
     php8-tokenizer \
     php8-pecl-redis \
     php8-pecl-xdebug \
@@ -46,7 +48,7 @@ RUN mkdir /var/log/php-fpm && mkdir /var/log/supervisor && mkdir /etc/supervisor
     && mkdir /var/log/xdebug
 
 # Configure supervisor
-COPY ./conf/supervisord.conf /etc/supervisor/supervisord.conf
+COPY ./conf/supervisor.ini /etc/supervisor.d/supervisor.ini
 
 # Configure cron
 COPY ./conf/crontab.txt /crontab.txt
@@ -54,4 +56,4 @@ RUN /usr/bin/crontab /crontab.txt && rm /crontab.txt
 
 # Tell docker that all future commands should run as the appuser user
 EXPOSE 9000
-ENTRYPOINT [ "/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf" ]
+ENTRYPOINT [ "/usr/bin/supervisord", "-c", "/etc/supervisord.conf" ]
